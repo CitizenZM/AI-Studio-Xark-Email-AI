@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useApp } from '../AppContext';
 import { Icons } from '../constants';
@@ -43,14 +42,17 @@ const BulkOutreachModal: React.FC = () => {
       setDrafts(prev => prev.map((d, idx) => idx === i ? { ...d, status: 'drafting' } : d));
 
       try {
+        // Fixed: Removed 'type' property as it is not supported in the GeminiService call context.
         const result = await geminiService.generateDraft(
           template.prompt_system,
           {
             company: pub.company,
             contact_person: pub.contact_person,
             website: pub.website,
-            type: pub.type,
-            tier: pub.priority_tier
+            tier: pub.priority_tier,
+            bio: pub.bio,
+            vertical_fit: pub.vertical_fit,
+            promo_methods: pub.promo_methods
           }
         );
 

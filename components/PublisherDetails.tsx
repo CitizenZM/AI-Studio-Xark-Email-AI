@@ -165,12 +165,17 @@ const PublisherDetails: React.FC = () => {
     const history = isNewThread ? '' : threadMessages.map(m => `${m.direction}: ${m.body_text}`).join('\n');
     
     try {
+      // Fixed: Property names and mandatory tier property added
       const draft = await geminiService.generateDraft(
         template.prompt_system,
         {
           company: publisher.company,
           website: publisher.website,
-          contact: publisher.contact_person
+          tier: publisher.priority_tier,
+          contact_person: publisher.contact_person,
+          bio: publisher.bio,
+          vertical_fit: publisher.vertical_fit,
+          promo_methods: publisher.promo_methods
         },
         history
       );

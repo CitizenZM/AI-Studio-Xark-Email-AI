@@ -1,30 +1,37 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 
 export class GeminiService {
   async generateDraft(
     systemPrompt: string, 
-    publisherContext: any, 
+    publisherContext: {
+      company: string;
+      website: string;
+      tier: string;
+      bio?: string;
+      contact_person?: string;
+      promo_methods?: string[];
+      vertical_fit?: string[];
+    }, 
     threadContext?: string
   ): Promise<{ subject: string; body: string }> {
+    // Initializing Gemini client using the environment's pre-configured key
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
     const prompt = `
-      STRATEGIC CONTEXT:
-      - We are Xark, a high-performance affiliate platform.
-      - Partner: ${publisherContext.company} (${publisherContext.website})
-      - Bio: ${publisherContext.bio || 'A growing publisher in the affiliate space.'}
-      - Promotion Style: ${publisherContext.promo_methods?.join(', ') || 'Various digital channels'}
-      - Traffic Profile: ${publisherContext.traffic_estimate || 'Confidential'}
-      - Priority Tier: ${publisherContext.tier || 'Standard'}
+      INTERNAL CONTEXT:
+      Platform: Xark (High-performance Affiliate Network)
+      Partner: ${publisherContext.company} (${publisherContext.website})
+      Classification: Tier ${publisherContext.tier}
+      Verticals: ${publisherContext.vertical_fit?.join(', ') || 'N/A'}
+      Partner Bio: ${publisherContext.bio || 'Affiliate publisher.'}
       
-      ${threadContext ? `PREVIOUS CONVERSATION HISTORY:\n${threadContext}` : 'INITIAL OUTREACH: This is our first contact with this publisher.'}
+      ${threadContext ? `CONVERSATION LOGS:\n${threadContext}` : 'No previous history. This is a first-time outreach.'}
       
-      INSTRUCTIONS:
-      1. Use the provided context to create a hyper-personalized response.
-      2. If conversation history exists, continue the thread naturally.
-      3. DO NOT use generic placeholders like [Name] or [Company]; use the actual data provided.
-      4. The tone should be ${systemPrompt}.
-      5. Keep the message concise but compelling.
+      OBJECTIVE:
+      Generate a professional and engaging affiliate outreach message. 
+      Tailor the tone specifically to the publisher's bio and the existing thread context.
+      Do not use generic placeholders like [Name]; use ${publisherContext.contact_person || 'their team'} if appropriate.
     `;
 
     try {
@@ -39,11 +46,11 @@ export class GeminiService {
             properties: {
               subject: { 
                 type: Type.STRING,
-                description: "A short, engaging email subject line."
+                description: "A compelling subject line for the email thread."
               },
               body: { 
                 type: Type.STRING, 
-                description: "The full personalized message body."
+                description: "The personalized body of the email/message."
               },
             },
             required: ["subject", "body"],
@@ -51,13 +58,15 @@ export class GeminiService {
         }
       });
 
+      // Accessing the .text property directly as per latest SDK guidelines
       const jsonStr = response.text || '{}';
       return JSON.parse(jsonStr.trim());
     } catch (error) {
-      console.error("Gemini Drafting Error:", error);
+      console.error("Gemini Generation Error:", error);
+      // Fallback response in case of API failure
       return {
         subject: `Partnership Update: Xark x ${publisherContext.company}`,
-        body: `Hi ${publisherContext.contact_person || 'Team'},\n\nI was looking at ${publisherContext.website} again and wanted to reach out regarding our potential partnership. We're seeing great results in the ${publisherContext.vertical_fit?.[0] || 'affiliate'} space and think you'd be a perfect fit.\n\nBest,\nThe Xark Team`
+        body: `Hi ${publisherContext.contact_person || 'Team'},\n\nI hope you're having a great week. We've been reviewing the performance at ${publisherContext.website} and believe there's a strong opportunity to deepen our partnership with some of our upcoming Q3 campaigns.\n\nLet me know if you're available for a quick chat next week.\n\nBest regards,\nThe Xark Team`
       };
     }
   }

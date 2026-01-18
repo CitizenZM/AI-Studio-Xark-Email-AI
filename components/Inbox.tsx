@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../AppContext';
 import { Icons } from '../constants';
@@ -82,14 +83,13 @@ const Inbox: React.FC = () => {
           bio: selectedPublisher.bio,
           promo_methods: selectedPublisher.promo_methods,
           contact_person: selectedPublisher.contact_person,
-          traffic_estimate: selectedPublisher.traffic_estimate,
           vertical_fit: selectedPublisher.vertical_fit
         },
         conversationHistory
       );
       
       setReplyText(draft.body);
-      notify('AI Draft generated', 'info');
+      notify('AI Smart Draft generated', 'info');
     } catch (error) {
       notify('Failed to generate AI draft', 'error');
     } finally {
@@ -185,13 +185,13 @@ const Inbox: React.FC = () => {
             <div className="p-4 border-t border-zinc-800 bg-zinc-900/30">
               <div className="mb-3 flex justify-between items-end">
                 <div className="flex-1 max-w-sm">
-                  <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block mb-1 ml-1">Contextual Template</label>
+                  <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block mb-1 ml-1">Strategy Template</label>
                   <select 
                     value={selectedTemplateId} 
                     onChange={handleTemplateChange}
                     className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2 text-sm text-zinc-300 outline-none focus:ring-1 focus:ring-indigo-500 transition-all cursor-pointer"
                   >
-                    <option value="">Manual Response</option>
+                    <option value="">Manual Draft</option>
                     {templates.map(t => (
                       <option key={t.id} value={t.id}>{t.name}</option>
                     ))}
@@ -201,20 +201,20 @@ const Inbox: React.FC = () => {
 
               <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-2 shadow-inner relative group/composer">
                 {isDrafting && (
-                  <div className="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm rounded-2xl z-20 flex flex-col items-center justify-center transition-all">
+                  <div className="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm rounded-2xl z-20 flex flex-col items-center justify-center transition-all animate-shimmer">
                     <div className="flex gap-2 mb-3">
                       <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce [animation-delay:-0.3s]" />
                       <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce [animation-delay:-0.15s]" />
                       <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" />
                     </div>
-                    <span className="text-[11px] font-black text-white uppercase tracking-[0.25em] animate-pulse">Gemini Drafting...</span>
+                    <span className="text-[11px] font-black text-white uppercase tracking-[0.25em]">Gemini AI Drafting...</span>
                   </div>
                 )}
                 
                 <textarea 
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
-                  placeholder="Draft your message..."
+                  placeholder="Draft your message here..."
                   className="w-full bg-transparent p-4 text-sm focus:outline-none min-h-[140px] resize-none text-zinc-200 font-medium leading-relaxed"
                 />
 
@@ -243,7 +243,7 @@ const Inbox: React.FC = () => {
                       className="group flex items-center gap-2 bg-indigo-600/10 hover:bg-indigo-600 text-indigo-400 hover:text-white px-4 py-2 rounded-xl text-xs font-black transition-all border border-indigo-500/20 active:scale-95 disabled:opacity-50"
                     >
                       <Icons.Sparkles className={`w-4 h-4 ${isDrafting ? 'animate-spin' : 'group-hover:animate-pulse'}`} />
-                      {isDrafting ? 'DRAFTING...' : 'AI SMART DRAFT'}
+                      {isDrafting ? 'GENERATING...' : 'AI SMART DRAFT'}
                     </button>
                     
                     <button 
@@ -277,12 +277,12 @@ const Inbox: React.FC = () => {
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-zinc-700">
             <Icons.Inbox className="w-20 h-20 mb-4 opacity-10" />
-            <p className="text-sm font-black uppercase tracking-[0.2em]">Select an active thread</p>
+            <p className="text-sm font-black uppercase tracking-[0.2em]">Select a thread to begin</p>
           </div>
         )}
       </div>
 
-      {/* Publisher Sidebar */}
+      {/* Publisher Sidebar (Intelligence Panel) */}
       <div className="w-72 border-l border-zinc-800 p-6 space-y-8 bg-zinc-950/20 overflow-y-auto custom-scrollbar">
          <div>
             <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-4">Partner Profile</h4>

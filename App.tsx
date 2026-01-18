@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { AppProvider, useApp } from './AppContext';
 import Layout from './components/Layout';
 import Dashboard from './components/Dashboard';
@@ -41,6 +42,7 @@ const App: React.FC = () => {
   return (
     <AppProvider>
       <AppContent />
+      <SpeedInsights />
     </AppProvider>
   );
 };
